@@ -1,43 +1,29 @@
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
-const addButton = container.querySelector('.profile__add-button');
-let avalibleCards = [];
+const cardTemplate = document.querySelector('#card-template').content;
 
-function addCard(nameValue, linkValue) {
-    const cardTemplate = document.querySelector('#card-template').content;
+function createCard(nameValue, linkValue, removeCardCallback) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     cardElement.querySelector('.card__title').textContent = nameValue;
     cardElement.querySelector('.card__image').src = linkValue;
+    cardElement.querySelector('.card__image').alt = nameValue;
 
-    const resetButton = cardElement.querySelector('.card__delete-button');
-    resetButton.addEventListener('click', function () {
-        cardElement.remove();
-        avalibleCards.push({ name: nameValue, link: linkValue });
+    const removeButton = cardElement.querySelector('.card__delete-button');
+    removeButton.addEventListener('click', function () {
+        removeCardCallback(cardElement);
     });
 
-    cardsContainer.append(cardElement);
+    return cardElement;
+}
+
+function removeCard(cardElement) {
+    cardElement.remove();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
     initialCards.forEach(card => {
-        avalibleCards.push(card);
-    });
-
-    for (let i = 0; i < avalibleCards.length; i++) {
-        const card = avalibleCards[i];
-        addCard(card.name, card.link);
-        avalibleCards.splice(i, 1);
-        i--;
-    }
-
-    addButton.addEventListener('click', function () {
-        if (avalibleCards.length > 0){
-            const obj = avalibleCards[0];
-            const name = obj.name;
-            const link = obj.link;
-            addCard(name, link);
-            avalibleCards.splice(0, 1);
-        }
+        const cardElement = createCard(card.name, card.link, removeCard);
+        cardsContainer.append(cardElement);
     });
 });
 
