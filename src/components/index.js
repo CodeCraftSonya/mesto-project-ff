@@ -6,13 +6,15 @@ const cardsContainer = container.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template').content;
 const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
-const closePopupButton = document.querySelector('.popup__close');
 const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
-const formElement = document.querySelector('.popup__form');
-const nameInput = formElement.querySelector('.popup__input_type_name');
-const jobInput = formElement.querySelector('.popup__input_type_description');
+const formProfileElement = document.forms['edit-profile'];
+const nameInput = formProfileElement.querySelector('.popup__input_type_name');
+const jobInput = formProfileElement.querySelector('.popup__input_type_description');
+const formNewCardElement = document.forms['new-place'];
+const placeNameInput = formNewCardElement.querySelector('.popup__input_type_card-name');
+const linkInput = formNewCardElement.querySelector('.popup__input_type_url');
 
 
 
@@ -92,7 +94,18 @@ document.addEventListener('keydown', function (event) {
         editPopup.style.display = 'none';
     }
 
-formElement.addEventListener('submit', handleFormSubmit);
+formProfileElement.addEventListener('submit', handleFormSubmit);
+
+function handleFormNewCardSubmit(evt) {
+    evt.preventDefault();
+    const cardElement = createCard(placeNameInput.value, linkInput.value, removeCard);
+    cardsContainer.prepend(cardElement);
+    newCardPopup.style.display = 'none';
+    formNewCardElement.reset();
+
+}
+
+formNewCardElement.addEventListener('submit', handleFormNewCardSubmit);
 
 
 
