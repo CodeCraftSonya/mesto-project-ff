@@ -10,17 +10,19 @@ const addButton = document.querySelector('.profile__add-button');
 const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
 const imagePopup = document.querySelector('.popup_type_image');
+const imageInPopup = document.querySelector('.popup__image');
 const formProfileElement = document.forms['edit-profile'];
 const nameInput = formProfileElement.querySelector('.popup__input_type_name');
 const jobInput = formProfileElement.querySelector('.popup__input_type_description');
 const formNewCardElement = document.forms['new-place'];
 const placeNameInput = formNewCardElement.querySelector('.popup__input_type_card-name');
 const linkInput = formNewCardElement.querySelector('.popup__input_type_url');
+const popupCaption = document.querySelector('.popup__caption');
 
 
 
 
-function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback) {
+function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback, openImageCallback) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     cardElement.querySelector('.card__title').textContent = nameValue;
@@ -37,6 +39,10 @@ function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback) 
         likeCardCallback(evt.target);
     })
 
+    cardImage.addEventListener('click', function (){
+        openImageCallback(linkValue, nameValue);
+    });
+
     return cardElement;
 }
 
@@ -48,9 +54,16 @@ function likeCard(cardElement) {
     cardElement.style.backgroundImage = `url('${likeActiveImage}')`;
 }
 
+function openImage(linkValue, nameValue) {
+    imagePopup.style.display = 'flex';
+    imageInPopup.src = linkValue;
+    imageInPopup.alt = nameValue;
+    popupCaption.textContent = nameValue;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     initialCards.forEach(card => {
-        const cardElement = createCard(card.name, card.link, removeCard, likeCard);
+        const cardElement = createCard(card.name, card.link, removeCard, likeCard, openImage);
         cardsContainer.append(cardElement);
     });
 });
@@ -68,14 +81,6 @@ editButton.addEventListener('click', function () {
 
 addButton.addEventListener('click', function () {
     newCardPopup.style.display = 'flex';
-});
-
-document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('click', function (event) {
-        if (event.target.classList.contains('card__image')) {
-            imagePopup.style.display = 'flex';
-        }
-    });
 });
 
 
