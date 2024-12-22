@@ -55,7 +55,7 @@ function likeCard(cardElement) {
 }
 
 function openImage(linkValue, nameValue) {
-    imagePopup.style.display = 'flex';
+    imagePopup.classList.add('popup_is-animated_visible');
     imageInPopup.src = linkValue;
     imageInPopup.alt = nameValue;
     popupCaption.textContent = nameValue;
@@ -69,18 +69,18 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function closePopup(popup) {
-    popup.style.display = 'none';
+    popup.classList.remove('popup_is-animated_visible');
 }
 
 editButton.addEventListener('click', function () {
-    editPopup.style.display = 'flex';
+    editPopup.classList.add('popup_is-animated_visible');
 
     nameInput.value = document.querySelector('.profile__title').textContent;
     jobInput.value = document.querySelector('.profile__description').textContent;
 });
 
 addButton.addEventListener('click', function () {
-    newCardPopup.style.display = 'flex';
+    newCardPopup.classList.add('popup_is-animated_visible');
 });
 
 
@@ -96,7 +96,7 @@ document.addEventListener('click', function (event) {
 
 document.addEventListener('keydown', function (event) {
     if (event.key === 'Escape') {
-        const activePopup = document.querySelector('.popup[style*="display: flex"]');
+        const activePopup = document.querySelector('.popup[style*="visibility: visible"]');
         if (activePopup) {
             closePopup(activePopup);
         }
@@ -107,7 +107,7 @@ document.addEventListener('keydown', function (event) {
         evt.preventDefault();
         document.querySelector('.profile__title').textContent = nameInput.value;
         document.querySelector('.profile__description').textContent = jobInput.value;
-        editPopup.style.display = 'none';
+        editPopup.classList.remove('popup_is-animated_visible');
     }
 
 formProfileElement.addEventListener('submit', handleFormSubmit);
@@ -116,7 +116,7 @@ function handleFormNewCardSubmit(evt) {
     evt.preventDefault();
     const cardElement = createCard(placeNameInput.value, linkInput.value, removeCard);
     cardsContainer.prepend(cardElement);
-    newCardPopup.style.display = 'none';
+    newCardPopup.classList.remove('popup_is-animated_visible');
     formNewCardElement.reset();
 
 }
