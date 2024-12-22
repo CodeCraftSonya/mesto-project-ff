@@ -1,5 +1,6 @@
 import '../pages/index.css';
 import initialCards from './cards.js';
+import likeActiveImage from '../images/like-active.svg';
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
@@ -18,7 +19,8 @@ const linkInput = formNewCardElement.querySelector('.popup__input_type_url');
 
 
 
-function createCard(nameValue, linkValue, removeCardCallback) {
+
+function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback) {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
     const cardImage = cardElement.querySelector('.card__image');
     cardElement.querySelector('.card__title').textContent = nameValue;
@@ -30,6 +32,11 @@ function createCard(nameValue, linkValue, removeCardCallback) {
         removeCardCallback(cardElement);
     });
 
+    const cardLikeButton = cardElement.querySelector('.card__like-button');
+    cardLikeButton.addEventListener('click', function (evt) {
+        likeCardCallback(evt.target);
+    })
+
     return cardElement;
 }
 
@@ -37,9 +44,13 @@ function removeCard(cardElement) {
     cardElement.remove();
 }
 
+function likeCard(cardElement) {
+    cardElement.style.backgroundImage = `url('${likeActiveImage}')`;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     initialCards.forEach(card => {
-        const cardElement = createCard(card.name, card.link, removeCard);
+        const cardElement = createCard(card.name, card.link, removeCard, likeCard);
         cardsContainer.append(cardElement);
     });
 });
