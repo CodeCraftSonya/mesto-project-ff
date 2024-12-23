@@ -1,9 +1,11 @@
-function closeModal(popup) {
-    popup.classList.remove('popup_is-animated_visible');
-}
-
 function openModal(popup) {
     popup.classList.add('popup_is-animated_visible');
+    document.addEventListener('keydown', closePopupByEscape);
+}
+
+function closeModal(popup) {
+    popup.classList.remove('popup_is-animated_visible');
+    document.removeEventListener('keydown', closePopupByEscape);
 }
 
 function closePopupByOverlayClick(event) {

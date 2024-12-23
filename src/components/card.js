@@ -1,5 +1,3 @@
-import likeActiveImage from "../images/like-active.svg";
-
 const cardTemplate = document.querySelector('#card-template').content;
 
 function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback, openImageCallback) {
@@ -31,7 +29,7 @@ function removeCard(cardElement) {
 }
 
 function likeCard(cardElement) {
-    cardElement.style.backgroundImage = `url('${likeActiveImage}')`;
+    cardElement.classList.toggle('liked');
 }
 
 export { createCard, removeCard, likeCard};
