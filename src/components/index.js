@@ -2,6 +2,7 @@ import '../pages/index.css';
 import initialCards from './cards.js';
 import {createCard, likeCard, removeCard} from './card.js';
 import {closeModal, closePopupByOverlayClick, openModal} from './modal.js';
+import {clearValidation, enableValidation} from './validation.js'
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
@@ -21,6 +22,14 @@ const imagePopupCaption = document.querySelector('.popup__caption');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
+const validationConfig = {
+    formSelector: '.popup__form',
+    inputSelector: '.popup__input',
+    submitButtonSelector: '.popup__button',
+    inactiveButtonClass: 'popup__button_disabled',
+    inputErrorClass: 'popup__input_type_error',
+    errorClass: 'popup__error_visible'
+};
 
 function openImage(linkValue, nameValue) {
     openModal(imagePopup);
@@ -54,12 +63,25 @@ document.addEventListener('DOMContentLoaded', function () {
 editButton.addEventListener('click', function () {
     openModal(editPopup);
 
+    const formElement = editPopup.querySelector('.popup__form');
+    if (formElement) {
+        clearValidation(formElement, validationConfig);
+    }
+
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
 });
 
 addButton.addEventListener('click', function () {
     openModal(newCardPopup);
+
+    const formElement = newCardPopup.querySelector('.popup__form');
+    if (formElement) {
+        clearValidation(formElement, validationConfig);
+    }
+
+    placeNameInput.value = '';
+    linkInput.value = '';
 });
 
 document.addEventListener('click', closePopupByOverlayClick);
@@ -67,6 +89,8 @@ document.addEventListener('click', closePopupByOverlayClick);
 formProfileElement.addEventListener('submit', handleFormProfileSubmit);
 
 formNewCardElement.addEventListener('submit', handleFormNewCardSubmit);
+
+enableValidation(validationConfig);
 
 
 
