@@ -51,7 +51,8 @@ Promise.all([getUserInfo(), getInitialCards()])
                 openImage,
                 card.likes,
                 card.owner._id,
-                userId
+                userId,
+                card._id
             );
             cardsContainer.append(cardElement);
         });
@@ -97,13 +98,6 @@ function handleFormNewCardSubmit(evt) {
     formNewCardElement.reset();
 }
 
-// document.addEventListener('DOMContentLoaded', function () {
-//     initialCards.forEach(card => {
-//         const cardElement = createCard(card.name, card.link, removeCard, likeCard, openImage);
-//         cardsContainer.append(cardElement);
-//     });
-// });
-
 editButton.addEventListener('click', function () {
     openModal(editPopup);
 
@@ -135,6 +129,8 @@ formProfileElement.addEventListener('submit', handleFormProfileSubmit);
 formNewCardElement.addEventListener('submit', handleFormNewCardSubmit);
 
 enableValidation(validationConfig);
+
+export {cardTitle, cardImage}
 
 
 

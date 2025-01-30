@@ -40,17 +40,27 @@ export const addCard = (name, link) => {
         .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
 };
 
+export const deleteCard = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    })
+        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+};
 
-// export const getInitialCards = () => {
-//     return fetch(`${config.baseUrl}/cards`, {
-//         headers: config.headers
-//     })
-//         .then(res => {
-//             if (res.ok) {
-//                 return res.json();
-//             }
-//
-//             // если ошибка, отклоняем промис
-//             return Promise.reject(`Ошибка: ${res.status}`);
-//         });
-// }
+export const likesCard = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'PUT',
+        headers: config.headers
+    })
+        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+};
+
+export const removeLikesCard = (cardId) => {
+    return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+        method: 'DELETE',
+        headers: config.headers
+    })
+        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+};
+
