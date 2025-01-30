@@ -22,3 +22,15 @@
 .card__like-button.liked {
   background-image: url('../../../images/like-active.svg');
 }
+
+.card__like{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card__like-counter{
+  display: inline-block;
+  margin: 0;
+}

@@ -31,6 +31,15 @@ export const editProfile = (name, about) => {
         .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
 };
 
+export const addCard = (name, link) => {
+    return fetch(`${config.baseUrl}/cards`, {
+        method: 'POST',
+        headers: config.headers,
+        body: JSON.stringify({name, link})
+    })
+        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+};
+
 
 // export const getInitialCards = () => {
 //     return fetch(`${config.baseUrl}/cards`, {

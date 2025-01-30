@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {createCard, likeCard, removeCard} from './card.js';
 import {closeModal, closePopupByOverlayClick, openModal} from './modal.js';
 import {clearValidation, enableValidation} from './validation.js'
-import {editProfile, getInitialCards, getUserInfo} from "./api.js";
+import {addCard, editProfile, getInitialCards, getUserInfo} from "./api.js";
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
@@ -22,6 +22,8 @@ const imagePopupCaption = document.querySelector('.popup__caption');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
+const cardTitle = document.querySelector('.card__title');
+const cardImage = document.querySelector('.card__image');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -38,7 +40,7 @@ Promise.all([getUserInfo(), getInitialCards()])
         profileTitle.textContent = userData.name;
         profileDescription.textContent = userData.about;
         profileImage.style.backgroundImage = `url(${userData.avatar})`;
-        // const userId = userData._id;
+        const userId = userData._id;
 
         cardsData.forEach(card => {
             const cardElement = createCard(
@@ -47,8 +49,9 @@ Promise.all([getUserInfo(), getInitialCards()])
                 removeCard,
                 likeCard,
                 openImage,
-                // card._id,
-                // userId
+                card.likes,
+                card.owner._id,
+                userId
             );
             cardsContainer.append(cardElement);
         });
@@ -80,6 +83,16 @@ function handleFormNewCardSubmit(evt) {
     evt.preventDefault();
     const cardElement = createCard(placeNameInput.value, linkInput.value, removeCard, likeCard, openImage);
     cardsContainer.prepend(cardElement);
+    const name = placeNameInput.value;
+    const link = linkInput.value;
+    addCard(name, link)
+        .then(data => {
+            console.log(data);
+            cardTitle.textContent = data.name;
+            cardImage.style.src = data.link;
+            closeModal(editPopup);
+        })
+        .catch(err => console.log(err));
     closeModal(newCardPopup);
     formNewCardElement.reset();
 }
