@@ -1,8 +1,8 @@
 import '../pages/index.css';
-import initialCards from './cards.js';
 import {createCard, likeCard, removeCard} from './card.js';
 import {closeModal, closePopupByOverlayClick, openModal} from './modal.js';
 import {clearValidation, enableValidation} from './validation.js'
+import {editProfile, getInitialCards, getUserInfo} from "./api.js";
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
@@ -21,6 +21,7 @@ const linkInput = formNewCardElement.querySelector('.popup__input_type_url');
 const imagePopupCaption = document.querySelector('.popup__caption');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
+const profileImage = document.querySelector('.profile__image');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -31,6 +32,29 @@ const validationConfig = {
     errorClass: 'popup__error_visible'
 };
 
+Promise.all([getUserInfo(), getInitialCards()])
+    .then(([userData, cardsData]) => {
+        console.log(userData, cardsData);
+        profileTitle.textContent = userData.name;
+        profileDescription.textContent = userData.about;
+        profileImage.style.backgroundImage = `url(${userData.avatar})`;
+        // const userId = userData._id;
+
+        cardsData.forEach(card => {
+            const cardElement = createCard(
+                card.name,
+                card.link,
+                removeCard,
+                likeCard,
+                openImage,
+                // card._id,
+                // userId
+            );
+            cardsContainer.append(cardElement);
+        });
+    })
+    .catch(err => console.log(`Ошибка загрузки данных: ${err}`));
+
 function openImage(linkValue, nameValue) {
     openModal(imagePopup);
     imageInPopup.src = linkValue;
@@ -40,9 +64,16 @@ function openImage(linkValue, nameValue) {
 
 function handleFormProfileSubmit(evt) {
     evt.preventDefault();
-    profileTitle.textContent = nameInput.value;
-    profileDescription.textContent = jobInput.value;
-    closeModal(editPopup);
+    const name = nameInput.value;
+    const about = jobInput.value;
+    editProfile(name, about)
+    .then(data => {
+        console.log(data);
+        profileTitle.textContent = data.name;
+        profileDescription.textContent = data.about;
+        closeModal(editPopup);
+    })
+    .catch(err => console.log(err));
 }
 
 function handleFormNewCardSubmit(evt) {
@@ -53,12 +84,12 @@ function handleFormNewCardSubmit(evt) {
     formNewCardElement.reset();
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    initialCards.forEach(card => {
-        const cardElement = createCard(card.name, card.link, removeCard, likeCard, openImage);
-        cardsContainer.append(cardElement);
-    });
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//     initialCards.forEach(card => {
+//         const cardElement = createCard(card.name, card.link, removeCard, likeCard, openImage);
+//         cardsContainer.append(cardElement);
+//     });
+// });
 
 editButton.addEventListener('click', function () {
     openModal(editPopup);

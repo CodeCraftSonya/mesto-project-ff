@@ -26,6 +26,7 @@ const checkInputValidity = (formElement, inputElement, validationConfig) => {
                 "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы",
                 validationConfig
             );
+            console.log('несоответствие паттерну')
             return;
         }
     }
@@ -39,7 +40,7 @@ const checkInputValidity = (formElement, inputElement, validationConfig) => {
 const setEventListeners = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-    toggleButtonState(inputList, buttonElement, validationConfig);
+    // toggleButtonState(inputList, buttonElement, validationConfig);
 
     inputList.forEach((inputElement) => {
         if (inputElement.classList.contains('form__input_type_error')) {
@@ -47,6 +48,7 @@ const setEventListeners = (formElement, validationConfig) => {
         }
         inputElement.addEventListener('input', function () {
             checkInputValidity(formElement, inputElement, validationConfig);
+            console.log('Инпут')
             toggleButtonState(inputList, buttonElement, validationConfig);
         });
     });
@@ -55,7 +57,8 @@ const setEventListeners = (formElement, validationConfig) => {
 const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {
         if (["name", "description", "place-name"].includes(inputElement.name)) {
-            return inputElement.value.trim() === "" || !checkPatternMatch(inputElement.value);
+            console.log(inputElement.value.trim() === "")
+            return !checkPatternMatch(inputElement.value);
         }
         return !inputElement.validity.valid;
     })
@@ -64,8 +67,10 @@ const hasInvalidInput = (inputList) => {
 const toggleButtonState = (inputList, buttonElement, validationConfig) => {
     if(hasInvalidInput(inputList)){
         buttonElement.classList.add(validationConfig.inactiveButtonClass);
+        console.log('🔴 Кнопка ОТКЛЮЧЕНА')
     } else{
         buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+        console.log('🟢 Кнопка ВКЛЮЧЕНА')
     }
 }
 
@@ -88,4 +93,4 @@ const enableValidation = (validationConfig) => {
     });
 };
 
-export { enableValidation, clearValidation };
+export { enableValidation, clearValidation, toggleButtonState };
