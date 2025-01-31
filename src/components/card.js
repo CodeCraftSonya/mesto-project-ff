@@ -1,4 +1,5 @@
 import {deleteCard, likesCard, removeLikesCard} from "./api.js";
+import {openDeletePopup} from './index.js'
 
 const cardTemplate = document.querySelector('#card-template').content;
 
@@ -7,20 +8,20 @@ function createCard(nameValue, linkValue, removeCardCallback, likeCardCallback, 
     const cardImage = cardElement.querySelector('.card__image');
     const cardLikesCounter = cardElement.querySelector('.card__like-counter');
     const cardLikeButton = cardElement.querySelector('.card__like-button');
-    
+
     cardElement.querySelector('.card__title').textContent = nameValue;
     cardImage.src = linkValue;
     cardImage.alt = nameValue;
-    cardLikesCounter.textContent = likesValue.length;
+    cardLikesCounter.textContent = Array.isArray(likesValue) ? likesValue.length : 0;
 
-    if (likesValue.some(like => like._id === userId)) {
+    if (Array.isArray(likesValue) && likesValue.some(like => like._id === userId)) {
         cardLikeButton.classList.add('liked');
     }
 
     const removeButton = cardElement.querySelector('.card__delete-button');
     if (ownerId === userId) {
         removeButton.addEventListener('click', function () {
-            removeCardCallback(cardElement, cardId);
+            openDeletePopup(cardElement, cardId);
         });
     } else {
         removeButton.style.display = "none";

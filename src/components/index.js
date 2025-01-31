@@ -2,7 +2,7 @@ import '../pages/index.css';
 import {createCard, likeCard, removeCard} from './card.js';
 import {closeModal, closePopupByOverlayClick, openModal} from './modal.js';
 import {clearValidation, enableValidation} from './validation.js'
-import {addCard, editProfile, getInitialCards, getUserInfo} from "./api.js";
+import {addCard, changeProfileImage, deleteCard, editProfile, getInitialCards, getUserInfo} from "./api.js";
 
 const container = document.querySelector('.content');
 const cardsContainer = container.querySelector('.places__list');
@@ -10,11 +10,16 @@ const editButton = document.querySelector('.profile__edit-button');
 const addButton = document.querySelector('.profile__add-button');
 const editPopup = document.querySelector('.popup_type_edit');
 const newCardPopup = document.querySelector('.popup_type_new-card');
+const newProfileImagePopup = document.querySelector('.popup_type_new-profile-image');
+const deleteCardPopup = document.querySelector('.popup_type_ensure-delete-card');
+const deleteCardForm = deleteCardPopup.querySelector('.popup__form');
 const imagePopup = document.querySelector('.popup_type_image');
 const imageInPopup = document.querySelector('.popup__image');
 const formProfileElement = document.forms['edit-profile'];
 const nameInput = formProfileElement.querySelector('.popup__input_type_name');
 const jobInput = formProfileElement.querySelector('.popup__input_type_description');
+const formNewProfileImageElement = document.forms['new-profile-image'];
+const profileImageInput = formNewProfileImageElement.querySelector('.popup__input_type_profile-url');
 const formNewCardElement = document.forms['new-place'];
 const placeNameInput = formNewCardElement.querySelector('.popup__input_type_card-name');
 const linkInput = formNewCardElement.querySelector('.popup__input_type_url');
@@ -24,6 +29,7 @@ const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
 const cardTitle = document.querySelector('.card__title');
 const cardImage = document.querySelector('.card__image');
+const popupButton = document.querySelector('.popup__button');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -66,36 +72,79 @@ function openImage(linkValue, nameValue) {
     imagePopupCaption.textContent = nameValue;
 }
 
+function renderLoading (isLoading, buttonElement) {
+    if(isLoading) {
+        buttonElement.textContent = 'Сохранение...';
+    } else{
+        buttonElement.textContent = 'Сохранить';
+    }
+}
+
+function handleFormProfileImageSubmit(evt) {
+    evt.preventDefault();
+    const submitButton = evt.submitter;
+    renderLoading(true, submitButton);
+    const avatar = profileImageInput.value;
+    changeProfileImage(avatar)
+        .then(data => {
+        console.log(data);
+        profileImage.style.backgroundImage = `url(${data.avatar})`;
+        closeModal(newProfileImagePopup);
+        })
+        .catch(err => console.log(err))
+        .finally(() => {
+        renderLoading(false, submitButton);
+        })
+}
+
 function handleFormProfileSubmit(evt) {
     evt.preventDefault();
+    const submitButton = evt.submitter;
+    renderLoading(true, submitButton);
+
     const name = nameInput.value;
     const about = jobInput.value;
     editProfile(name, about)
-    .then(data => {
-        console.log(data);
-        profileTitle.textContent = data.name;
-        profileDescription.textContent = data.about;
-        closeModal(editPopup);
-    })
-    .catch(err => console.log(err));
+        .then(data => {
+            console.log(data);
+            profileTitle.textContent = data.name;
+            profileDescription.textContent = data.about;
+            closeModal(editPopup);
+        })
+        .catch(err => console.log(err))
+        .finally(() => {
+        renderLoading(false, submitButton);
+        })
 }
 
 function handleFormNewCardSubmit(evt) {
     evt.preventDefault();
-    const cardElement = createCard(placeNameInput.value, linkInput.value, removeCard, likeCard, openImage);
-    cardsContainer.prepend(cardElement);
+    const submitButton = evt.submitter;
+    renderLoading(true, submitButton);
+
     const name = placeNameInput.value;
     const link = linkInput.value;
     addCard(name, link)
         .then(data => {
             console.log(data);
-            cardTitle.textContent = data.name;
-            cardImage.style.src = data.link;
-            closeModal(editPopup);
+            const cardElement = createCard(data.name,
+                data.link,
+                removeCard,
+                likeCard,
+                openImage,
+                data.likes,
+                data.owner._id,
+                data.owner._id,
+                data._id
+            );
+            cardsContainer.prepend(cardElement);
+            closeModal(newCardPopup);
+            formNewCardElement.reset();
         })
-        .catch(err => console.log(err));
-    closeModal(newCardPopup);
-    formNewCardElement.reset();
+        .catch(err => console.log(err))
+        .finally(() => {
+        renderLoading(false, submitButton);
+        })
 }
 
 editButton.addEventListener('click', function () {
@@ -122,15 +171,52 @@ addButton.addEventListener('click', function () {
     linkInput.value = '';
 });
 
+let deleteCardId = null;
+let deleteCardElement = null;
+
+function openDeletePopup(cardElement, cardId) {
+    deleteCardId = cardId;
+    deleteCardElement = cardElement;
+    openModal(deleteCardPopup);
+}
+
+deleteCardForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+
+    if (!deleteCardId) return;
+
+    deleteCard(deleteCardId)
+        .then(() => {
+            deleteCardElement.remove();
+            closeModal(deleteCardPopup);
+            deleteCardId = null;
+            deleteCardElement = null;
+        })
+        .catch(err => console.log(`Ошибка удаления карточки: ${err}`));
+});
+
+profileImage.addEventListener('click', function () {
+    openModal(newProfileImagePopup);
+
+    const formElement = newProfileImagePopup.querySelector('.popup__form');
+    if (formElement) {
+        clearValidation(formElement, validationConfig);
+    }
+
+    profileImageInput.value = '';
+});
+
 document.addEventListener('click', closePopupByOverlayClick);
 
 formProfileElement.addEventListener('submit', handleFormProfileSubmit);
 
 formNewCardElement.addEventListener('submit', handleFormNewCardSubmit);
 
+formNewProfileImageElement.addEventListener('submit', handleFormProfileImageSubmit);
+
 enableValidation(validationConfig);
 
-export {cardTitle, cardImage}
+export {cardTitle, cardImage, openDeletePopup}
 
 
 

@@ -64,3 +64,12 @@ export const removeLikesCard = (cardId) => {
         .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
 };
 
+export const changeProfileImage = (avatar) => {
+    return fetch(`${config.baseUrl}/users/me/avatar`, {
+        method: 'PATCH',
+        headers: config.headers,
+        body: JSON.stringify({avatar})
+    })
+        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+};
+
