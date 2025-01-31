@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import {createCard, likeCard, removeCard} from './card.js';
+import {createCard, likeCard} from './card.js';
 import {closeModal, closePopupByOverlayClick, openModal} from './modal.js';
 import {clearValidation, enableValidation} from './validation.js'
 import {addCard, changeProfileImage, deleteCard, editProfile, getInitialCards, getUserInfo} from "./api.js";
@@ -29,7 +29,6 @@ const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
 const cardTitle = document.querySelector('.card__title');
 const cardImage = document.querySelector('.card__image');
-const popupButton = document.querySelector('.popup__button');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -42,7 +41,6 @@ const validationConfig = {
 
 Promise.all([getUserInfo(), getInitialCards()])
     .then(([userData, cardsData]) => {
-        console.log(userData, cardsData);
         profileTitle.textContent = userData.name;
         profileDescription.textContent = userData.about;
         profileImage.style.backgroundImage = `url(${userData.avatar})`;
@@ -52,7 +50,6 @@ Promise.all([getUserInfo(), getInitialCards()])
             const cardElement = createCard(
                 card.name,
                 card.link,
-                removeCard,
                 likeCard,
                 openImage,
                 card.likes,
@@ -87,7 +84,6 @@ function handleFormProfileImageSubmit(evt) {
     const avatar = profileImageInput.value;
     changeProfileImage(avatar)
         .then(data => {
-        console.log(data);
         profileImage.style.backgroundImage = `url(${data.avatar})`;
         closeModal(newProfileImagePopup);
         })
@@ -106,7 +102,6 @@ function handleFormProfileSubmit(evt) {
     const about = jobInput.value;
     editProfile(name, about)
         .then(data => {
-            console.log(data);
             profileTitle.textContent = data.name;
             profileDescription.textContent = data.about;
             closeModal(editPopup);
@@ -126,10 +121,8 @@ function handleFormNewCardSubmit(evt) {
     const link = linkInput.value;
     addCard(name, link)
         .then(data => {
-            console.log(data);
             const cardElement = createCard(data.name,
                 data.link,
-                removeCard,
                 likeCard,
                 openImage,
                 data.likes,
