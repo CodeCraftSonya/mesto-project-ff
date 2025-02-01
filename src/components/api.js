@@ -6,12 +6,16 @@ const config = {
     }
 }
 
+const handleResponse = (res) => {
+    return res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`)
+}
+
 export const getUserInfo = () => {
     return fetch(`${config.baseUrl}/users/me`, {
         method: 'GET',
         headers: config.headers
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const getInitialCards = () => {
@@ -19,7 +23,7 @@ export const getInitialCards = () => {
         method: 'GET',
         headers: config.headers
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const editProfile = (name, about) => {
@@ -28,7 +32,7 @@ export const editProfile = (name, about) => {
         headers: config.headers,
         body: JSON.stringify({name, about})
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const addCard = (name, link) => {
@@ -37,7 +41,7 @@ export const addCard = (name, link) => {
         headers: config.headers,
         body: JSON.stringify({name, link})
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const deleteCard = (cardId) => {
@@ -45,7 +49,7 @@ export const deleteCard = (cardId) => {
         method: 'DELETE',
         headers: config.headers
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const likesCard = (cardId) => {
@@ -53,7 +57,7 @@ export const likesCard = (cardId) => {
         method: 'PUT',
         headers: config.headers
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const removeLikesCard = (cardId) => {
@@ -61,7 +65,7 @@ export const removeLikesCard = (cardId) => {
         method: 'DELETE',
         headers: config.headers
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 
 export const changeProfileImage = (avatar) => {
@@ -70,6 +74,6 @@ export const changeProfileImage = (avatar) => {
         headers: config.headers,
         body: JSON.stringify({avatar})
     })
-        .then(res => res.ok ? res.json() : Promise.reject(`Ошибка: ${res.status}`));
+        .then(res => handleResponse(res));
 };
 

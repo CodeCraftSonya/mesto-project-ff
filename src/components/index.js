@@ -27,8 +27,6 @@ const imagePopupCaption = document.querySelector('.popup__caption');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profileImage = document.querySelector('.profile__image');
-const cardTitle = document.querySelector('.card__title');
-const cardImage = document.querySelector('.card__image');
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -38,6 +36,30 @@ const validationConfig = {
     inputErrorClass: 'popup__input_type_error',
     errorClass: 'popup__error_visible'
 };
+
+let deleteCardId = null;
+let deleteCardElement = null;
+
+function handleDeleteCard(cardElement, cardId, openModal, deleteCardPopup) {
+    deleteCardId = cardId;
+    deleteCardElement = cardElement;
+    openModal(deleteCardPopup);
+}
+
+deleteCardForm.addEventListener('submit', function (evt) {
+    evt.preventDefault();
+
+    if (!deleteCardId) return;
+
+    deleteCard(deleteCardId)
+        .then(() => {
+            deleteCardElement.remove();
+            closeModal(deleteCardPopup);
+            deleteCardId = null;
+            deleteCardElement = null;
+        })
+        .catch(err => console.log(`Ошибка удаления карточки: ${err}`));
+});
 
 Promise.all([getUserInfo(), getInitialCards()])
     .then(([userData, cardsData]) => {
@@ -55,7 +77,10 @@ Promise.all([getUserInfo(), getInitialCards()])
                 card.likes,
                 card.owner._id,
                 userId,
-                card._id
+                card._id,
+                openModal,          // Передаем openModal
+                deleteCardPopup,
+                handleDeleteCard
             );
             cardsContainer.append(cardElement);
         });
@@ -70,11 +95,7 @@ function openImage(linkValue, nameValue) {
 }
 
 function renderLoading (isLoading, buttonElement) {
-    if(isLoading) {
-        buttonElement.textContent = 'Сохранение...';
-    } else{
-        buttonElement.textContent = 'Сохранить';
-    }
+    buttonElement.textContent = isLoading ? 'Сохранение...' : 'Сохранить';
 }
 
 function handleFormProfileImageSubmit(evt) {
@@ -128,11 +149,13 @@ function handleFormNewCardSubmit(evt) {
                 data.likes,
                 data.owner._id,
                 data.owner._id,
-                data._id
+                data._id,
+                openModal,          // Передаем openModal
+                deleteCardPopup,
+                handleDeleteCard
             );
             cardsContainer.prepend(cardElement);
             closeModal(newCardPopup);
-            formNewCardElement.reset();
         })
         .catch(err => console.log(err))
         .finally(() => {
@@ -144,9 +167,7 @@ editButton.addEventListener('click', function () {
     openModal(editPopup);
 
     const formElement = editPopup.querySelector('.popup__form');
-    if (formElement) {
-        clearValidation(formElement, validationConfig);
-    }
+    clearValidation(formElement, validationConfig);
 
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
@@ -156,45 +177,16 @@ addButton.addEventListener('click', function () {
     openModal(newCardPopup);
 
     const formElement = newCardPopup.querySelector('.popup__form');
-    if (formElement) {
-        clearValidation(formElement, validationConfig);
-    }
+    clearValidation(formElement, validationConfig);
 
-    placeNameInput.value = '';
-    linkInput.value = '';
-});
-
-let deleteCardId = null;
-let deleteCardElement = null;
-
-function openDeletePopup(cardElement, cardId) {
-    deleteCardId = cardId;
-    deleteCardElement = cardElement;
-    openModal(deleteCardPopup);
-}
-
-deleteCardForm.addEventListener('submit', function (evt) {
-    evt.preventDefault();
-
-    if (!deleteCardId) return;
-
-    deleteCard(deleteCardId)
-        .then(() => {
-            deleteCardElement.remove();
-            closeModal(deleteCardPopup);
-            deleteCardId = null;
-            deleteCardElement = null;
-        })
-        .catch(err => console.log(`Ошибка удаления карточки: ${err}`));
+    formNewCardElement.reset();
 });
 
 profileImage.addEventListener('click', function () {
     openModal(newProfileImagePopup);
 
     const formElement = newProfileImagePopup.querySelector('.popup__form');
-    if (formElement) {
-        clearValidation(formElement, validationConfig);
-    }
+    clearValidation(formElement, validationConfig);
 
     profileImageInput.value = '';
 });
@@ -208,17 +200,3 @@ formNewCardElement.addEventListener('submit', handleFormNewCardSubmit);
 formNewProfileImageElement.addEventListener('submit', handleFormProfileImageSubmit);
 
 enableValidation(validationConfig);
-
-export {cardTitle, cardImage, openDeletePopup}
-
-
-
-
-
-
-
-
-
-
-
-
