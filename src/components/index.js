@@ -70,15 +70,11 @@ Promise.all([getUserInfo(), getInitialCards()])
 
         cardsData.forEach(card => {
             const cardElement = createCard(
-                card.name,
-                card.link,
+                card,
                 likeCard,
                 openImage,
-                card.likes,
-                card.owner._id,
                 userId,
-                card._id,
-                openModal,          // Передаем openModal
+                openModal,
                 deleteCardPopup,
                 handleDeleteCard
             );
@@ -142,15 +138,12 @@ function handleFormNewCardSubmit(evt) {
     const link = linkInput.value;
     addCard(name, link)
         .then(data => {
-            const cardElement = createCard(data.name,
-                data.link,
+            const cardElement = createCard(
+                data,
                 likeCard,
                 openImage,
-                data.likes,
                 data.owner._id,
-                data.owner._id,
-                data._id,
-                openModal,          // Передаем openModal
+                openModal,
                 deleteCardPopup,
                 handleDeleteCard
             );

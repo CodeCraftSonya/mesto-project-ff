@@ -12,22 +12,11 @@ const hideInputError = (formElement, inputElement, validationConfig) => {
     errorElement.textContent = '';
 };
 
-const checkPatternMatch = (inputText) => {
-    const inputTextRegex = /^[a-zA-Zа-яА-ЯёЁ\s-]+$/;
-    return inputText === "" || inputTextRegex.test(inputText);
-};
-
 const checkInputValidity = (formElement, inputElement, validationConfig) => {
-    if (["name", "description", "place-name"].includes(inputElement.name)) {
-        if (!checkPatternMatch(inputElement.value)) {
-            showInputError(
-                formElement,
-                inputElement,
-                "Разрешены только латинские, кириллические буквы, знаки дефиса и пробелы",
-                validationConfig
-            );
-            return;
-        }
+    if (inputElement.validity.patternMismatch) {
+        const errorMessage = inputElement.dataset.errorMessage || "Некорректный ввод";
+        showInputError(formElement, inputElement, errorMessage, validationConfig);
+        return;
     }
     if (!inputElement.validity.valid) {
         showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
@@ -41,9 +30,7 @@ const setEventListeners = (formElement, validationConfig) => {
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
 
     inputList.forEach((inputElement) => {
-        if (inputElement.classList.contains('form__input_type_error')) {
-            hideInputError(formElement, inputElement);
-        }
+        hideInputError(formElement, inputElement, validationConfig);
         inputElement.addEventListener('input', function () {
             checkInputValidity(formElement, inputElement, validationConfig);
             toggleButtonState(inputList, buttonElement, validationConfig);
@@ -52,19 +39,16 @@ const setEventListeners = (formElement, validationConfig) => {
 };
 
 const hasInvalidInput = (inputList) => {
-    return inputList.some((inputElement) => {
-        if (["name", "description", "place-name"].includes(inputElement.name)) {
-            return !checkPatternMatch(inputElement.value);
-        }
-        return !inputElement.validity.valid;
-    })
+    return inputList.some((inputElement) => !inputElement.validity.valid);
 }
 
 const toggleButtonState = (inputList, buttonElement, validationConfig) => {
     if(hasInvalidInput(inputList)){
         buttonElement.classList.add(validationConfig.inactiveButtonClass);
+        buttonElement.disabled = true;
     } else{
         buttonElement.classList.remove(validationConfig.inactiveButtonClass);
+        buttonElement.disabled = false;
     }
 }
 
